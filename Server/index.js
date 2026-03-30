@@ -32,7 +32,7 @@ mongoose
   .then(() => console.log("Connected to MongoDB"))
   .catch((err) => console.error("Could not connect to MongoDB", err));
 
-// Middleware to verify user
+// Middleware to verify user (admin only)
 const varifyUser = (req, res, next) => {
   const token = req.cookies.token; // Corrected to req.cookies
   if (!token) {
@@ -51,6 +51,31 @@ const varifyUser = (req, res, next) => {
     });
   }
 };
+
+// Middleware to verify any authenticated user (admin or regular user)
+const verifyAnyUser = (req, res, next) => {
+  const token = req.cookies.token;
+  if (!token) {
+    return res.status(401).json({ message: "Token is missing" });
+  } else {
+    jwt.verify(token, "jwt-secret-key", (err, decode) => {
+      if (err) {
+        return res.status(403).json({ message: "Error with token" });
+      } else {
+        req.user = decode;
+        next();
+      }
+    });
+  }
+};
+
+app.get('/verify', verifyAnyUser, (req, res) => {
+  res.json({ message: "Success", role: req.user.role, name: req.user.name });
+});
+
+app.get('/profile', verifyAnyUser, (req, res) => {
+  res.json({ message: "Success", role: req.user.role, name: req.user.name, email: req.user.email });
+});
 
 app.get('/dashboard', varifyUser, (req, res) => {
   res.json({ message: "Success" });
@@ -85,12 +110,12 @@ app.post("/login", async (req, res) => {
       const isPasswordValid = await bcrypt.compare(password, user.password);
       if (isPasswordValid) {
         const token = jwt.sign(
-          { email: user.email, role: user.role },
+          { email: user.email, role: user.role, name: user.name },
           "jwt-secret-key",
           { expiresIn: "1d" }
         );
         res.cookie("token", token, { httpOnly: true });
-        return res.json({ status: "Success", role: user.role });
+        return res.json({ status: "Success", role: user.role, name: user.name });
       } else {
         return res.status(401).json("The password is incorrect");
       }
