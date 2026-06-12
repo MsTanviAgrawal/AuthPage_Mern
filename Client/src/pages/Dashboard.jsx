@@ -1,9 +1,9 @@
-import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { IoArrowBack } from 'react-icons/io5';
+import { verifySession } from '../services/api';
 
-const MyComponent = () => {
+const DashboardPage = () => {
     const [suc, setSuc] = useState("");
     const [userName, setUserName] = useState("");
     const [userRole, setUserRole] = useState("");
@@ -12,7 +12,7 @@ const MyComponent = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        axios.get('http://localhost:3001/verify', { withCredentials: true })
+        verifySession()
             .then(res => {
                 if (res.data.message === 'Success') {
                     setIsAuthenticated(true);
@@ -40,12 +40,11 @@ const MyComponent = () => {
     if (loading) {
         return (
             <div className="min-h-screen w-full relative flex items-center justify-center p-4">
-                {/* Aurora Dream Soft Harmony */}
                 <div
                     className="absolute inset-0 z-0"
                     style={{
                         background: `
-                         radial-gradient(ellipse 80% 60% at 60% 20%, rgba(175, 109, 255, 0.50), transparent 65%),
+                          radial-gradient(ellipse 80% 60% at 60% 20%, rgba(175, 109, 255, 0.50), transparent 65%),
                           radial-gradient(ellipse 70% 60% at 20% 80%, rgba(255, 100, 180, 0.45), transparent 65%),
                           radial-gradient(ellipse 60% 50% at 60% 65%, rgba(255, 235, 170, 0.43), transparent 62%),
                           radial-gradient(ellipse 65% 40% at 50% 60%, rgba(120, 190, 255, 0.48), transparent 68%),
@@ -66,12 +65,11 @@ const MyComponent = () => {
 
     return (
         <div className="min-h-screen w-full relative">
-            {/* Aurora Dream Soft Harmony */}
             <div
                 className="absolute inset-0 z-0"
                 style={{
                     background: `
-                     radial-gradient(ellipse 80% 60% at 60% 20%, rgba(175, 109, 255, 0.50), transparent 65%),
+                      radial-gradient(ellipse 80% 60% at 60% 20%, rgba(175, 109, 255, 0.50), transparent 65%),
                       radial-gradient(ellipse 70% 60% at 20% 80%, rgba(255, 100, 180, 0.45), transparent 65%),
                       radial-gradient(ellipse 60% 50% at 60% 65%, rgba(255, 235, 170, 0.43), transparent 62%),
                       radial-gradient(ellipse 65% 40% at 50% 60%, rgba(120, 190, 255, 0.48), transparent 68%),
@@ -79,7 +77,6 @@ const MyComponent = () => {
                     `,
                 }}
             />
-            {/* Your content goes here */}
             <div className="relative z-10 flex items-center justify-center min-h-screen p-4">
                 <button
                     onClick={handleBack}
@@ -99,4 +96,4 @@ const MyComponent = () => {
     );
 };
 
-export default MyComponent;
+export default DashboardPage;

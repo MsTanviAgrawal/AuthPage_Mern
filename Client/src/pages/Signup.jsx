@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios from "axios";
+import { registerUser } from "../services/api";
 import { Link , useNavigate } from "react-router-dom";
 
 function Signup() {
@@ -9,32 +9,30 @@ function Signup() {
   const navigate = useNavigate();
 
   const handleSubmit = (e) => {
+    e.preventDefault();
 
     if (!name || !email || !password) {
       alert("Please fill in all fields");
       return;
   }
-
-    e.preventDefault();
-    // Example usage of the state values
+  
     console.log("Name:", name);
     console.log("Email:", email);
     console.log("Password:", password);
     
-    axios.post('http://localhost:3001/register', { name, email, password })
-    .then(() => {
-      alert("Registered Successfully");
-      navigate('/login');
-    })
-    .catch(err => {
-      if (err.response && err.response.data && err.response.data.error) {
-        alert(err.response.data.error); // Display the server error message
-      } else {
-        console.log(err);
-      }
-    });
+   registerUser({ name, email, password })
+      .then(() => {
+        alert("Registered Successfully");
+        navigate('/login');
+      })
+      .catch(err => {
+        if (err.response && err.response.data && err.response.data.error) {
+          alert(err.response.data.error); 
+        } else {
+          console.log(err);
+        }
+      });
   };
-
 
   return (
     <div className="min-h-screen w-full bg-white relative">

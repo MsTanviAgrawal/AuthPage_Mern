@@ -1,133 +1,28 @@
+
 const express = require("express");
-const mongoose = require("mongoose");
+const dotenv = require("dotenv");
 const cors = require("cors");
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
-const UserModel = require("./models/User");
+const connectDB = require("./config/db");
+const authRoutes = require("./routes/authRoutes");
 
 const app = express();
+dotenv.config(); 
+connectDB();
 
-// Middleware to parse JSON bodies
 app.use(express.json());
-
-// Middleware to enable CORS (Cross-Origin Resource Sharing)
+app.use(cookieParser());
 app.use(
   cors({
-    origin: ["http://localhost:5173", "http://localhost:5174", "http://localhost:5175"], // Allow both ports
+    origin: ["http://localhost:5173", "http://localhost:5174", "http://localhost:5175"],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
 );
 
-// Middleware to parse cookies
-app.use(cookieParser());
+app.use("/", authRoutes);
 
-// Connect to MongoDB using Mongoose
-mongoose
-  .connect("mongodb://localhost:27017/employee", {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(() => console.log("Connected to MongoDB"))
-  .catch((err) => console.error("Could not connect to MongoDB", err));
-
-// Middleware to verify user (admin only)
-const varifyUser = (req, res, next) => {
-  const token = req.cookies.token; // Corrected to req.cookies
-  if (!token) {
-    return res.status(401).json({ message: "Token is missing" });
-  } else {
-    jwt.verify(token, "jwt-secret-key", (err, decode) => {
-      if (err) {
-        return res.status(403).json({ message: "Error with token" });
-      } else {
-        if (decode.role === "admin") {
-          next();
-        } else {
-          return res.status(403).json({ message: "Not admin" });
-        }
-      }
-    });
-  }
-};
-
-// Middleware to verify any authenticated user (admin or regular user)
-const verifyAnyUser = (req, res, next) => {
-  const token = req.cookies.token;
-  if (!token) {
-    return res.status(401).json({ message: "Token is missing" });
-  } else {
-    jwt.verify(token, "jwt-secret-key", (err, decode) => {
-      if (err) {
-        return res.status(403).json({ message: "Error with token" });
-      } else {
-        req.user = decode;
-        next();
-      }
-    });
-  }
-};
-
-app.get('/verify', verifyAnyUser, (req, res) => {
-  res.json({ message: "Success", role: req.user.role, name: req.user.name });
-});
-
-app.get('/profile', verifyAnyUser, (req, res) => {
-  res.json({ message: "Success", role: req.user.role, name: req.user.name, email: req.user.email });
-});
-
-app.get('/dashboard', varifyUser, (req, res) => {
-  res.json({ message: "Success" });
-});
-
-// Route for user registration
-app.post("/register", async (req, res) => {
-  const { name, email, password } = req.body;
-
-  try {
-    const existingUser = await UserModel.findOne({ $or: [{ email }, { name }] });
-    if (existingUser) {
-      return res.status(400).json({ error: "User with this email or name already exists" });
-    }
-
-    const hash = await bcrypt.hash(password, 10);
-    const user = await UserModel.create({ name, email, password: hash });
-    res.json({ status: "OK" });
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-});
-
-// Route for user login
-app.post("/login", async (req, res) => {
-  const { email, password } = req.body;
-
-  try {
-    const user = await UserModel.findOne({ email: email });
-
-    if (user) {
-      const isPasswordValid = await bcrypt.compare(password, user.password);
-      if (isPasswordValid) {
-        const token = jwt.sign(
-          { email: user.email, role: user.role, name: user.name },
-          "jwt-secret-key",
-          { expiresIn: "1d" }
-        );
-        res.cookie("token", token, { httpOnly: true });
-        return res.json({ status: "Success", role: user.role, name: user.name });
-      } else {
-        return res.status(401).json("The password is incorrect");
-      }
-    } else {
-      return res.status(404).json("No record existed");
-    }
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// Start the server
-app.listen(3001, () => {
-  console.log("Server is Running on port 3001");
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => {
+  console.log(`Server is running smoothly on port ${PORT}`);
 });

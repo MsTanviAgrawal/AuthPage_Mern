@@ -22,13 +22,13 @@ function Home() {
         <p className="text-lg text-gray-700 mb-10 text-center max-w-2xl drop-shadow-md">This is the home page of our application. Feel free to explore and navigate through different sections.</p>
         <div className="flex flex-col gap-4 w-full max-w-sm">
           <Link to="/dashboard" className="w-full">
-            <button className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-purple-600 hover:to-pink-600 transition duration-200 shadow-lg">Go to Dashboard</button>
+            <button className="w-full bg-linear-to-r from-purple-500 to-pink-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-purple-600 hover:to-pink-600 transition duration-200 shadow-lg">Go to Dashboard</button>
           </Link>
           <Link to="/login" className="w-full">
-            <button className="w-full bg-gradient-to-r from-teal-500 to-teal-300 text-white px-6 py-3 rounded-lg font-semibold hover:from-teal-600 hover:to-green-600 transition duration-200 shadow-lg">Go to login</button>
+            <button className="w-full bg-linear-to-r from-teal-500 to-teal-300 text-white px-6 py-3 rounded-lg font-semibold hover:from-teal-600 hover:to-green-600 transition duration-200 shadow-lg">Go to login</button>
           </Link>
           <Link to="/register" className="w-full">
-            <button className="w-full bg-gradient-to-r from-pink-500 to-pink-400 text-white px-6 py-3 rounded-lg font-semibold hover:from-pink-500 hover:to-pink-800 transition duration-200 shadow-lg">Go to register</button>
+            <button className="w-full bg-linear-to-r from-pink-500 to-pink-400 text-white px-6 py-3 rounded-lg font-semibold hover:from-pink-500 hover:to-pink-800 transition duration-200 shadow-lg">Go to register</button>
           </Link>
         </div>
       </div>
