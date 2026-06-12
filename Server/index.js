@@ -14,7 +14,7 @@ app.use(express.json());
 // Middleware to enable CORS (Cross-Origin Resource Sharing)
 app.use(
   cors({
-    origin: ["http://localhost:5173", "http://localhost:5174"], // Allow both ports
+    origin: ["http://localhost:5173", "http://localhost:5174", "http://localhost:5175"], // Allow both ports
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
