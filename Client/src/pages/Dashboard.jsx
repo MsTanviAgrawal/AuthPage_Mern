@@ -34,7 +34,7 @@ const DashboardPage = () => {
     }, [navigate]);
 
     const handleBack = () => {
-        navigate(-1);
+        navigate('/')
     };
 
     if (loading) {
