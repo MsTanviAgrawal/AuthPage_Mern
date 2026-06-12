@@ -1,8 +1,10 @@
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-const UserModel = require("../models/User");
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import UserModel from "../models/User.js";
 
-// Controller 1: User Registration
+const { hash: _hash, compare } = bcrypt;
+const { sign } = jwt;
+
 const registerUser = async (req, res) => {
   const { name, email, password } = req.body;
 
@@ -12,7 +14,7 @@ const registerUser = async (req, res) => {
       return res.status(400).json({ error: "User with this email or name already exists" });
     }
 
-    const hash = await bcrypt.hash(password, 10);
+    const hash = await _hash(password, 10);
     await UserModel.create({ name, email, password: hash });
     res.json({ status: "OK" });
   } catch (err) {
@@ -29,9 +31,9 @@ const loginUser = async (req, res) => {
     const user = await UserModel.findOne({ email });
 
     if (user) {
-      const isPasswordValid = await bcrypt.compare(password, user.password);
+      const isPasswordValid = await compare(password, user.password);
       if (isPasswordValid) {
-        const token = jwt.sign(
+        const token = sign(
           { email: user.email, role: user.role, name: user.name },
           secretKey,
           { expiresIn: "1d" }
@@ -62,7 +64,7 @@ const getDashboardState = (req, res) => {
   res.json({ message: "Success" });
 };
 
-module.exports = {
+export default {
   registerUser,
   loginUser,
   getVerifyState,

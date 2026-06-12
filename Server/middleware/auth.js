@@ -1,4 +1,6 @@
-const jwt = require("jsonwebtoken");
+import jwt from "jsonwebtoken";
+
+const { verify } = jwt;
 
 const verifyUser = (req, res, next) => {
   const token = req.cookies.token;
@@ -8,7 +10,7 @@ const verifyUser = (req, res, next) => {
     return res.status(401).json({ message: "Token is missing" });
   }
 
-  jwt.verify(token, secretKey, (err, decode) => {
+  verify(token, secretKey, (err, decode) => {
     if (err) {
       return res.status(403).json({ message: "Error with token" });
     }
@@ -29,7 +31,7 @@ const verifyAnyUser = (req, res, next) => {
     return res.status(401).json({ message: "Token is missing" });
   }
 
-  jwt.verify(token, secretKey, (err, decode) => {
+  verify(token, secretKey, (err, decode) => {
     if (err) {
       return res.status(403).json({ message: "Error with token" });
     }
@@ -38,4 +40,4 @@ const verifyAnyUser = (req, res, next) => {
   });
 };
 
-module.exports = { verifyUser, verifyAnyUser };
+export default { verifyUser, verifyAnyUser };
